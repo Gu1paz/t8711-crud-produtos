@@ -9,7 +9,7 @@ from app.controllers.produto_controller import Produto_Controller
 
 # Componentes de Estados
 from app.dao.estado_dao import Estado_DAO
-from app.views.estado_view import Estado_Terminal_View
+from app.views.estado_view import Estado_View
 from app.controllers.estado_controller import Estado_Controller
 
 # Componentes de Cidades
@@ -19,7 +19,7 @@ from app.controllers.cidade_controller import Cidade_Controller
 
 # Componentes de Fornecedores
 from app.dao.fornecedor_dao import Fornecedor_DAO
-from app.views.fornecedor_view import Fornecedor_Terminal_View
+from app.views.fornecedor_view import Fornecedor_View
 from app.controllers.fornecedor_controller import Fornecedor_Controller
 
 # Componentes de Usuários
@@ -51,7 +51,7 @@ class ErpApplication:
 
         self._ctrl_estados = Estado_Controller(
             dao=self._dao_estados,
-            view=Estado_Terminal_View()
+            view=Estado_View()
         )
 
         # ===========================
@@ -79,7 +79,7 @@ class ErpApplication:
 
         self._ctrl_fornecedores = Fornecedor_Controller(
             dao=self._dao_fornecedores,
-            view=Fornecedor_Terminal_View()
+            view=Fornecedor_View()
         )
 
         # ===========================
