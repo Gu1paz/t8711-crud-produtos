@@ -51,7 +51,7 @@ class ErpApplication:
 
         self._ctrl_estados = Estado_Controller(
             dao=self._dao_estados,
-            view=Estado_View()
+            view=None
         )
 
         # ===========================
@@ -184,8 +184,12 @@ class ErpApplication:
                 self._ctrl_clientes.inicializar_sistema()
 
             elif opcao == 5:
-
-                self._ctrl_estados.inicializar_sistema()
+                janela_estados = tk.Tk()
+                self._ctrl_estados.view = Estado_View(
+                    janela_estados,
+                    self._ctrl_estados
+                )
+                self._ctrl_estados.view.iniciar()
 
             elif opcao == 6:
 
@@ -204,3 +208,4 @@ class ErpApplication:
 if __name__ == "__main__":
 
     app = ErpApplication()
+    app.run()
