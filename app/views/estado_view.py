@@ -1,6 +1,4 @@
-import sys
-from pathlib import Path
-sys.path.append(str(Path(__file__).resolve().parents[2]))
+
 
 from app.models.estado import Estado
 
@@ -23,7 +21,7 @@ class Estado_View:
         self.root.title("CRUD de Estados")
         self.root.geometry("800x600")
         self.root.resizable(False, False)
-  
+
 
     def criar_componentes(self):
         self.lbl_titulo = tk.Label(
@@ -34,7 +32,7 @@ class Estado_View:
         self.lbl_titulo.grid(
             row = 0,
             column = 0,
-            columnspan = 4,
+            columnspan = 2,
             padx = 5,
             pady = 5
         )
@@ -45,11 +43,13 @@ class Estado_View:
         self.frm_dados.grid(
             row = 1,
             column = 0,
-            columnspan=4,
+            columnspan=2,
             padx = 10,
             pady = 5,
             sticky = "ew"
         )
+        self.frm_dados.grid_columnconfigure(0, weight=0)
+        self.frm_dados.grid_columnconfigure(1, weight=1)
         self.lbl_id = tk.Label(
             self.frm_dados,
             text = "ID:"
@@ -86,7 +86,7 @@ class Estado_View:
         )
         self.txt_nome = tk.Entry(
             self.frm_dados,
-            width = 40
+            width = 30
         )
         self.txt_nome.grid(
             row = 1,
@@ -100,19 +100,19 @@ class Estado_View:
             text = "Sigla:"
         )
         self.lbl_sigla.grid(
-            row = 1,
-            column = 2,
+            row = 2,
+            column = 0,
             padx = 5,
             pady = 5,
             sticky = "w"
         )
         self.txt_sigla = tk.Entry(
             self.frm_dados,
-            width = 20
+            width = 5
         )
         self.txt_sigla.grid(
-            row = 1,
-            column = 3,
+            row = 2,
+            column = 1,
             padx = 5,
             pady = 5,
             sticky = "w"
@@ -123,11 +123,11 @@ class Estado_View:
             relief = "groove"
         )
         self.frm_botoes.grid(
-            row = 4,
+            row = 3,
             column = 0,
             padx = 10,
             pady = 5,
-            columnspan = 4,
+            columnspan = 2,
         )
         self.btn_novo = tk.Button(
             self.frm_botoes,
@@ -150,7 +150,7 @@ class Estado_View:
             column = 1,
             padx = 5,
             pady = 5
-        )        
+        )
         self.btn_alterar = tk.Button(
             self.frm_botoes,
             text = "Alterar",
@@ -161,7 +161,7 @@ class Estado_View:
             column = 2,
             padx = 5,
             pady = 5
-        )        
+        )
         self.btn_excluir = tk.Button(
             self.frm_botoes,
             text = "Excluir",
@@ -172,7 +172,7 @@ class Estado_View:
             column = 3,
             padx = 5,
             pady = 5
-        )   
+        )
         self.btn_fechar = tk.Button(
             self.frm_botoes,
             text = "Fechar",
@@ -183,15 +183,15 @@ class Estado_View:
             column = 4,
             padx = 5,
             pady = 5
-        )    
+        )
         self.tbl_estados = ttk.Treeview(
             self.root,
-            height = 10
-        )  
+            height = 12
+        )
         self.tbl_estados.grid(
-            row = 3,
+            row = 2,
             column = 0,
-            columnspan = 4,
+            columnspan = 2,
             padx = 10,
             pady = 10,
             sticky = "nsew"
@@ -210,7 +210,8 @@ class Estado_View:
         )
         self.tbl_estados.column(
             "id",
-            width = 10
+            width = 10,
+            anchor = "center"
         )
         self.tbl_estados.column(
             "nome",
@@ -245,6 +246,9 @@ class Estado_View:
         self.btn_excluir.config(
             command = self.controller.delete
         )
+        self.btn_fechar.config(
+            command = self.fechar
+        )
         self.tbl_estados.bind(
             "<<TreeviewSelect>>",
             self.controller.selecionar_estado
@@ -259,6 +263,7 @@ class Estado_View:
             str(estado.id)
         )
         self.txt_id.config(state = "readonly")
+
         self.txt_nome.insert(
             0,
             estado.nome
@@ -267,7 +272,7 @@ class Estado_View:
         self.txt_sigla.insert(
             0,
             estado.sigla
-        )        
+        )
 
     def limpar_campos(self):
         self.txt_id.config(state = "normal")
@@ -278,10 +283,10 @@ class Estado_View:
         self.txt_nome.focus()
 
     def limpar_treeview(self):
-
         for item in self.tbl_estados.get_children():
-
             self.tbl_estados.delete(item)
+
+
     def get_id_selecionado(self):
 
         item = self.tbl_estados.selection()[0]
@@ -294,14 +299,12 @@ class Estado_View:
             "Confirmação",
             "Deseja realmente excluir este estado?"
         )
-        
-
 
     def ler_dados_estado(self):
         nome = self.txt_nome.get()
         sigla = self.txt_sigla.get()
         return nome, sigla
-    
+
     def exibir_mensagem(self, mensagem, sucesso=True):
         if sucesso:
             messagebox.showinfo(
@@ -328,5 +331,9 @@ class Estado_View:
                     estado.sigla
                 )
             )
+    def fechar(self):
+        self.root.destroy()
+
     def iniciar(self):
+        self.controller.get_all()
         self.root.mainloop()

@@ -1,6 +1,4 @@
-import sys
-from pathlib import Path
-sys.path.append(str(Path(__file__).resolve().parents[2]))
+
 
 from app.models.fornecedor import Fornecedor
 
@@ -254,7 +252,8 @@ class Fornecedor_View:
         )
         self.tbl_fornecedores.column(
             "id",
-            width = 10
+            width = 10,
+            anchor = "center"
         )
         self.tbl_fornecedores.column(
             "razao_social",
@@ -289,6 +288,9 @@ class Fornecedor_View:
         self.btn_excluir.config(
             command = self.controller.delete
         )
+        self.btn_fechar.config(
+            command = self.fechar
+        )
         self.tbl_fornecedores.bind(
             "<<TreeviewSelect>>",
             self.controller.selecionar_fornecedor
@@ -303,6 +305,7 @@ class Fornecedor_View:
             str(fornecedor.id)
         )
         self.txt_id.config(state = "readonly")
+
         self.txt_razao_social.insert(
             0,
             fornecedor.razao_social
@@ -334,10 +337,10 @@ class Fornecedor_View:
         self.txt_razao_social.focus()
 
     def limpar_treeview(self):
-
         for item in self.tbl_fornecedores.get_children():
-
             self.tbl_fornecedores.delete(item)
+
+
     def get_id_selecionado(self):
 
         item = self.tbl_fornecedores.selection()[0]
@@ -350,8 +353,6 @@ class Fornecedor_View:
             "Confirmação",
             "Deseja realmente excluir este fornecedor?"
         )
-        
-
 
     def ler_dados_fornecedor(self):
         razao_social = self.txt_razao_social.get()
@@ -386,5 +387,9 @@ class Fornecedor_View:
                     fornecedor.cnpj
                 )
             )
+    def fechar(self):
+        self.root.destroy()
+
     def iniciar(self):
+        self.controller.get_all()
         self.root.mainloop()

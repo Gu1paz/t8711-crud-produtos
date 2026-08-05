@@ -5,6 +5,8 @@ class Fornecedor_Controller:
     def __init__(self, dao, view):
         self.dao = dao
         self.view = view
+        self.fornecedor_selecionado = None
+
 
     def new(self):
         self.view.limpar_campos()
@@ -12,7 +14,13 @@ class Fornecedor_Controller:
     def save(self):
         try:
             razao_social, nome_fantasia, cnpj, sla_atendimento = self.view.ler_dados_fornecedor()
-            fornecedor = Fornecedor(None,razao_social, nome_fantasia, cnpj, sla_atendimento)
+            fornecedor = Fornecedor(
+                    None,
+                    razao_social, 
+                    nome_fantasia, 
+                    cnpj, 
+                    sla_atendimento
+                )
             self.dao.save(fornecedor)
             self.get_all()
             self.view.exibir_mensagem("Fornecedor cadastrado com sucesso!")
@@ -22,17 +30,13 @@ class Fornecedor_Controller:
     def get_all(self):
         fornecedores = self.dao.get_all()
         self.view.exibir_fornecedores(fornecedores)
-        
+
     def selecionar_fornecedor(self, event):
-
         try:
-
             id_fornecedor = self.view.get_id_selecionado()
-
             self.fornecedor_selecionado = self.dao.get_by_id(
                 id_fornecedor
             )
-
             self.view.preencher_campos(
                 self.fornecedor_selecionado
             )

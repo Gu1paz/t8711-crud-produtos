@@ -13,33 +13,33 @@ class Estado_Controller:
     def save(self):
         try:
             nome, sigla = self.view.ler_dados_estado()
-            estado = Estado(None, nome, sigla)
+            estado = Estado(
+                None,
+                nome,
+                sigla
+            )
             self.dao.save(estado)
             self.get_all()
             self.view.exibir_mensagem("Estado cadastrado com sucesso!")
-        except ValueError:
-            self.view.exibir_mensagem("Erro: Entrada inválida. Tente novamente.", False)
-        
+        except ValueError as e:
+            self.view.exibir_mensagem(f"Erro: {str(e)}", False)
+
     def get_all(self):
         estados = self.dao.get_all()
         self.view.exibir_estados(estados)
 
     def selecionar_estado(self, event):
-
         try:
-
             id_estado = self.view.get_id_selecionado()
-
             self.estado_selecionado = self.dao.get_by_id(
                 id_estado
             )
-
             self.view.preencher_campos(
                 self.estado_selecionado
             )
 
         except IndexError:
-            pass        
+            pass
 
     def update(self):
         try:
