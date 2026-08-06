@@ -327,8 +327,8 @@ class Estado_View:
                 tk.END,
                 values=(
                     estado.id,
-                    estado.nome,
-                    estado.sigla
+                    estado.nome.title(),
+                    estado.sigla.upper()
                 )
             )
     def fechar(self):

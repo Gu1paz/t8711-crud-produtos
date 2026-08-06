@@ -1,4 +1,5 @@
 import os
+import tkinter as tk
 from colorama import init, Fore, Style
 from app.core.database import Database
 
@@ -14,7 +15,7 @@ from app.controllers.estado_controller import Estado_Controller
 
 # Componentes de Cidades
 from app.dao.cidade_dao import Cidade_DAO
-from app.views.cidade_view import Cidade_Terminal_View
+from app.views.cidade_view import Cidade_View
 from app.controllers.cidade_controller import Cidade_Controller
 
 # Componentes de Fornecedores
@@ -29,10 +30,10 @@ from app.controllers.usuario_controller import Usuario_Controller
 
 # Componentes de Clientes
 from app.dao.cliente_dao import Cliente_DAO
-from app.views.cliente_view import Cliente_Terminal_View
+from app.views.cliente_view import Cliente_View
 from app.controllers.cliente_controller import Cliente_Controller
 
-import tkinter as tk
+
 class ErpApplication:
 
     def __init__(self):
@@ -65,7 +66,7 @@ class ErpApplication:
         self._ctrl_cidades = Cidade_Controller(
             dao=self._dao_cidades,
             estado_dao=self._dao_estados,
-            view=Cidade_Terminal_View()
+            view=None
         )
 
         # ===========================
@@ -80,8 +81,6 @@ class ErpApplication:
             dao=self._dao_fornecedores,
             view=None
         )
-
-
 
         # ===========================
         # PRODUTOS
@@ -127,7 +126,7 @@ class ErpApplication:
             dao=self._dao_clientes,
             cidade_dao=self._dao_cidades,
             estado_dao=self._dao_estados,
-            view=Cliente_Terminal_View()
+            view=None
         )
 
     def _renderizar_menu_principal(self):
@@ -150,8 +149,7 @@ class ErpApplication:
             return -1
 
     def run(self):
-        
-          
+
         while True:
 
             opcao = self._renderizar_menu_principal()
@@ -176,15 +174,18 @@ class ErpApplication:
                     self._ctrl_fornecedores
                 )                
                 self._ctrl_fornecedores.view.iniciar()
-                
 
             elif opcao == 3:
 
                 self._ctrl_usuarios.inicializar_sistema()
 
             elif opcao == 4:
-
-                self._ctrl_clientes.inicializar_sistema()
+                janela_clientes = tk.Tk()
+                self._ctrl_clientes.view = Cliente_View(
+                    janela_clientes,
+                    self._ctrl_clientes
+                )
+                self._ctrl_clientes.view.iniciar()
 
             elif opcao == 5:
                 janela_estados = tk.Tk()
@@ -195,8 +196,12 @@ class ErpApplication:
                 self._ctrl_estados.view.iniciar()
 
             elif opcao == 6:
-
-                self._ctrl_cidades.inicializar_sistema()
+                janela_cidades = tk.Tk()
+                self._ctrl_cidades.view = Cidade_View(
+                    janela_cidades,
+                    self._ctrl_cidades
+                )
+                self._ctrl_cidades.view.iniciar()
 
             else:
 
@@ -206,7 +211,7 @@ class ErpApplication:
                     Fore.WHITE +
                     "Pressione Enter para continuar..."
                 )
-    
+
 
 if __name__ == "__main__":
 
