@@ -122,4 +122,8 @@ class Cidade_Terminal_View:
 
     def aguardar_entrada(self):
 
+<<<<<<< HEAD
         input(Fore.WHITE + "Pressione Enter para continuar...")
+=======
+        input(Fore.WHITE + "Pressione Enter para continuar...")
+>>>>>>> upstream/main
