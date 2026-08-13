@@ -1,5 +1,6 @@
 from colorama import init
 from app.core.database import Database
+from app.core.idioma import Idioma
 
 # Componentes de Produtos
 from app.dao.produto_dao import Produto_DAO
@@ -26,6 +27,12 @@ from app.dao.fornecedor_dao import Fornecedor_DAO
 from app.dao.fornecedor_categoria_dao import Fornecedor_Categoria_DAO
 from app.views.fornecedor_view import Fornecedor_View
 from app.controllers.fornecedor_controller import Fornecedor_Controller
+
+# Componentes de Perfis
+from app.dao.perfil_dao import Perfil_DAO
+from app.dao.perfil_fornecedor_dao import Perfil_Fornecedor_DAO
+from app.views.perfil_view import Perfil_View
+from app.controllers.perfil_controller import Perfil_Controller
 
 # Componentes de Usuários
 from app.dao.usuario_dao import Usuario_DAO
@@ -55,6 +62,7 @@ class ErpApplication:
         self._janela_fornecedores = None
         self._janela_produtos = None
         self._janela_categorias = None
+        self._janela_perfis = None
         self._janela_usuarios = None
         self._janela_clientes = None
 
@@ -135,18 +143,39 @@ class ErpApplication:
         )
 
         # ===========================
+        # PERFIS
+        # ===========================
+
+        self._dao_perfis = Perfil_DAO(
+            self._database
+        )
+
+        self._dao_perfil_fornecedores = Perfil_Fornecedor_DAO(
+            self._database
+        )
+
+        self._ctrl_perfis = Perfil_Controller(
+            dao=self._dao_perfis,
+            fornecedor_dao=self._dao_fornecedores,
+            perfil_fornecedor_dao=self._dao_perfil_fornecedores,
+            view=None
+        )
+
+        # ===========================
         # USUÁRIOS
         # ===========================
 
         self._dao_usuarios = Usuario_DAO(
             self._database,
-            self._dao_cidades
+            self._dao_cidades,
+            self._dao_perfis
         )
 
         self._ctrl_usuarios = Usuario_Controller(
             dao=self._dao_usuarios,
             cidade_dao=self._dao_cidades,
             estado_dao=self._dao_estados,
+            perfil_dao=self._dao_perfis,
             view=None
         )
 
@@ -178,56 +207,84 @@ class ErpApplication:
 
         menu_cadastros_basicos = tk.Menu(menu_principal, tearoff=0)
         menu_cadastros_basicos.add_command(
-            label="Estados",
+            label=Idioma.t("menu.estados"),
             command=self._abrir_estados
         )
         menu_cadastros_basicos.add_command(
-            label="Cidades",
+            label=Idioma.t("menu.cidades"),
             command=self._abrir_cidades
         )
         menu_principal.add_cascade(
-            label="Cadastros básicos",
+            label=Idioma.t("menu.cadastros_basicos"),
             menu=menu_cadastros_basicos
         )
 
         menu_acessos = tk.Menu(menu_principal, tearoff=0)
         menu_acessos.add_command(
-            label="Usuários",
+            label=Idioma.t("menu.usuarios"),
             command=self._abrir_usuarios
         )
+        menu_acessos.add_command(
+            label=Idioma.t("menu.perfis"),
+            command=self._abrir_perfis
+        )
         menu_principal.add_cascade(
-            label="Acessos",
+            label=Idioma.t("menu.acessos"),
             menu=menu_acessos
         )
 
         menu_gestao_estoque = tk.Menu(menu_principal, tearoff=0)
         menu_gestao_estoque.add_command(
-            label="Clientes",
+            label=Idioma.t("menu.clientes"),
             command=self._abrir_clientes
         )
         menu_gestao_estoque.add_command(
-            label="Fornecedores",
+            label=Idioma.t("menu.fornecedores"),
             command=self._abrir_fornecedores
         )
         menu_gestao_estoque.add_command(
-            label="Produtos",
+            label=Idioma.t("menu.produtos"),
             command=self._abrir_produtos
         )
         menu_gestao_estoque.add_command(
-            label="Categorias",
+            label=Idioma.t("menu.categorias"),
             command=self._abrir_categorias
         )
         menu_principal.add_cascade(
-            label="Gestão de estoque",
+            label=Idioma.t("menu.gestao_estoque"),
             menu=menu_gestao_estoque
         )
 
+        menu_idioma = tk.Menu(menu_principal, tearoff=0)
+        menu_idioma.add_command(
+            label="Português",
+            command=self._selecionar_portugues
+        )
+        menu_idioma.add_command(
+            label="English",
+            command=self._selecionar_ingles
+        )
+        menu_principal.add_cascade(
+            label=Idioma.t("menu.idioma"),
+            menu=menu_idioma
+        )
+
         menu_principal.add_command(
-            label="Sair",
+            label=Idioma.t("menu.sair"),
             command=self._root.destroy
         )
 
         self._root.config(menu=menu_principal)
+
+    def _mudar_idioma(self, codigo):
+        Idioma.definir(codigo)
+        self._criar_menu()
+
+    def _selecionar_portugues(self):
+        self._mudar_idioma("pt")
+
+    def _selecionar_ingles(self):
+        self._mudar_idioma("en")
 
     def _abrir_janela(self, atributo_janela, classe_view, controller):
 
@@ -259,6 +316,9 @@ class ErpApplication:
     def _abrir_categorias(self):
         self._abrir_janela("_janela_categorias", Categoria_View, self._ctrl_categorias)
 
+    def _abrir_perfis(self):
+        self._abrir_janela("_janela_perfis", Perfil_View, self._ctrl_perfis)
+
     def _abrir_usuarios(self):
         self._abrir_janela("_janela_usuarios", Usuario_View, self._ctrl_usuarios)
 
@@ -272,4 +332,5 @@ class ErpApplication:
 if __name__ == "__main__":
 
     app = ErpApplication()
+
     app.run()

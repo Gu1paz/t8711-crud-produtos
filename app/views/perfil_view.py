@@ -1,4 +1,7 @@
-from app.models.categoria import Categoria
+
+
+from app.models.perfil import Perfil
+from app.views.perfil_fornecedor_view import Perfil_Fornecedor_View
 
 import tkinter as tk
 from tkinter import messagebox
@@ -6,7 +9,7 @@ from tkinter import ttk
 
 
 
-class Categoria_View:
+class Perfil_View:
     def __init__(self, root, controller):
         self.root = root
         self.controller = controller
@@ -16,7 +19,7 @@ class Categoria_View:
         self.configurar_eventos()
 
     def configurar_janela(self):
-        self.root.title("CRUD de Categorias")
+        self.root.title("CRUD de Perfis")
         self.root.geometry("800x600")
         self.root.resizable(False, False)
 
@@ -24,7 +27,7 @@ class Categoria_View:
     def criar_componentes(self):
         self.lbl_titulo = tk.Label(
             self.root,
-            text = "Cadastro de Categorias",
+            text = "Cadastro de Perfis",
             font = ("Arial", 16, "bold"),
         )
         self.lbl_titulo.grid(
@@ -36,7 +39,7 @@ class Categoria_View:
         )
         self.frm_dados = tk.LabelFrame(
             self.root,
-            text = "Dados da categoria"
+            text = "Dados do perfil"
         )
         self.frm_dados.grid(
             row = 1,
@@ -84,10 +87,35 @@ class Categoria_View:
         )
         self.txt_nome = tk.Entry(
             self.frm_dados,
-            width = 30
+            width = 40
         )
         self.txt_nome.grid(
             row = 1,
+            column = 1,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.lbl_descricao = tk.Label(
+            self.frm_dados,
+            text = "Descrição:"
+        )
+        self.lbl_descricao.grid(
+            row = 2,
+            column = 0,
+            padx = 5,
+            pady = 5,
+            sticky = "w"
+        )
+        self.txt_descricao = tk.Text(
+            self.frm_dados,
+            width = 60,
+            height = 3,
+            wrap = "word",
+            font = "TkTextFont"
+        )
+        self.txt_descricao.grid(
+            row = 2,
             column = 1,
             padx = 5,
             pady = 5,
@@ -99,7 +127,7 @@ class Categoria_View:
             relief = "groove"
         )
         self.frm_botoes.grid(
-            row = 2,
+            row = 3,
             column = 0,
             padx = 10,
             pady = 5,
@@ -149,6 +177,17 @@ class Categoria_View:
             padx = 5,
             pady = 5
         )
+        self.btn_fornecedores = tk.Button(
+            self.frm_botoes,
+            text = "Fornecedores",
+            width = 15
+        )
+        self.btn_fornecedores.grid(
+            row = 0,
+            column = 4,
+            padx = 5,
+            pady = 5
+        )
         self.btn_fechar = tk.Button(
             self.frm_botoes,
             text = "Fechar",
@@ -156,16 +195,16 @@ class Categoria_View:
         )
         self.btn_fechar.grid(
             row = 0,
-            column = 4,
+            column = 5,
             padx = 5,
             pady = 5
         )
-        self.tbl_categorias = ttk.Treeview(
+        self.tbl_perfis = ttk.Treeview(
             self.root,
             height = 12
         )
-        self.tbl_categorias.grid(
-            row = 3,
+        self.tbl_perfis.grid(
+            row = 2,
             column = 0,
             columnspan = 2,
             padx = 10,
@@ -174,31 +213,40 @@ class Categoria_View:
         )
 
     def configurar_treeview(self):
-        self.tbl_categorias["columns"] = (
+        self.tbl_perfis["columns"] = (
             "id",
-            "nome"
+            "nome",
+            "descricao"
         )
-        self.tbl_categorias.column(
+        self.tbl_perfis.column(
             "#0",
             width = 0,
             stretch = False
         )
-        self.tbl_categorias.column(
+        self.tbl_perfis.column(
             "id",
             width = 10,
             anchor = "center"
         )
-        self.tbl_categorias.column(
+        self.tbl_perfis.column(
             "nome",
-            width = 50
+            width = 40
         )
-        self.tbl_categorias.heading(
+        self.tbl_perfis.column(
+            "descricao",
+            width = 60
+        )
+        self.tbl_perfis.heading(
             "id",
             text = "ID"
         )
-        self.tbl_categorias.heading(
+        self.tbl_perfis.heading(
             "nome",
             text = "Nome"
+        )
+        self.tbl_perfis.heading(
+            "descricao",
+            text = "Descrição"
         )
     def configurar_eventos(self):
         self.btn_novo.config(
@@ -213,27 +261,35 @@ class Categoria_View:
         self.btn_excluir.config(
             command = self.controller.delete
         )
+        self.btn_fornecedores.config(
+            command = self.controller.abrir_fornecedores
+        )
         self.btn_fechar.config(
             command = self.fechar
         )
-        self.tbl_categorias.bind(
+        self.tbl_perfis.bind(
             "<<TreeviewSelect>>",
-            self.controller.selecionar_categoria
+            self.controller.selecionar_perfil
 
         )
-    def preencher_campos(self, categoria):
+    def preencher_campos(self, perfil):
 
         self.limpar_campos()
         self.txt_id.config(state = "normal")
         self.txt_id.insert(
             0,
-            str(categoria.id)
+            str(perfil.id)
         )
         self.txt_id.config(state = "readonly")
 
         self.txt_nome.insert(
             0,
-            categoria.nome
+            perfil.nome
+        )
+
+        self.txt_descricao.insert(
+            "1.0",
+            perfil.descricao
         )
 
     def limpar_campos(self):
@@ -241,29 +297,32 @@ class Categoria_View:
         self.txt_id.delete(0, tk.END)
         self.txt_id.config(state = "readonly")
         self.txt_nome.delete(0, tk.END)
+        self.txt_descricao.delete("1.0", tk.END)
         self.txt_nome.focus()
 
     def limpar_treeview(self):
-        for item in self.tbl_categorias.get_children():
-            self.tbl_categorias.delete(item)
+        for item in self.tbl_perfis.get_children():
+            self.tbl_perfis.delete(item)
 
 
     def get_id_selecionado(self):
 
-        item = self.tbl_categorias.selection()[0]
+        item = self.tbl_perfis.selection()[0]
 
-        return self.tbl_categorias.item(item)["values"][0]
+        return self.tbl_perfis.item(item)["values"][0]
 
     def confirmar_exclusao(self):
 
         return messagebox.askyesno(
             "Confirmação",
-            "Deseja realmente excluir esta categoria?",
+            "Deseja realmente excluir este perfil?",
             parent=self.root
         )
 
-    def ler_dados_categoria(self):
-        return self.txt_nome.get()
+    def ler_dados_perfil(self):
+        nome = self.txt_nome.get()
+        descricao = self.txt_descricao.get("1.0", tk.END).strip()
+        return nome, descricao
 
     def exibir_mensagem(self, mensagem, sucesso=True):
         if sucesso:
@@ -278,20 +337,31 @@ class Categoria_View:
                 mensagem,
                 parent=self.root
             )
-    def exibir_categorias(self, categorias):
+    def exibir_perfis(self, perfis):
 
         self.limpar_treeview()
 
-        for categoria in categorias:
+        for perfil in perfis:
 
-            self.tbl_categorias.insert(
+            self.tbl_perfis.insert(
                 "",
                 tk.END,
                 values=(
-                    categoria.id,
-                    categoria.nome
+                    perfil.id,
+                    perfil.nome,
+                    perfil.descricao
                 )
             )
+
+    def abrir_fornecedores(self, perfil, fornecedores_disponiveis):
+        janela_fornecedores = tk.Toplevel(self.root)
+        Perfil_Fornecedor_View(
+            janela_fornecedores,
+            self.controller,
+            perfil,
+            fornecedores_disponiveis
+        )
+
     def fechar(self):
         self.root.destroy()
 

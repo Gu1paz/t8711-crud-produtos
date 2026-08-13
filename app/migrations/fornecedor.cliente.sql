@@ -7,3 +7,4 @@ create table fornecedor
 	sla_atendimento int not null,
 	primary key(id)
 );
+

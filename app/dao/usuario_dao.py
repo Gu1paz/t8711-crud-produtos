@@ -4,9 +4,10 @@ from app.models.usuario import Usuario
 
 class Usuario_DAO(DAO):
 
-    def __init__(self, database, cidade_dao):
+    def __init__(self, database, cidade_dao, perfil_dao):
         super().__init__(database)
         self._cidade_dao = cidade_dao
+        self._perfil_dao = perfil_dao
 
     def save(self, usuario):
 
@@ -20,10 +21,12 @@ class Usuario_DAO(DAO):
                         NOME,
                         EMAIL,
                         DATA_NASCIMENTO,
-                        CIDADE_ID
+                        CIDADE_ID,
+                        PERFIL_ID
                     )
                     VALUES
                     (
+                        %s,
                         %s,
                         %s,
                         %s,
@@ -37,7 +40,8 @@ class Usuario_DAO(DAO):
                     usuario.nome,
                     usuario.email,
                     usuario.data_nascimento,
-                    usuario.cidade.id
+                    usuario.cidade.id,
+                    usuario.perfil.id
                 )
             )
 
@@ -66,7 +70,8 @@ class Usuario_DAO(DAO):
                         NOME,
                         EMAIL,
                         DATA_NASCIMENTO,
-                        CIDADE_ID
+                        CIDADE_ID,
+                        PERFIL_ID
                     FROM
                         USUARIO
                     ORDER BY
@@ -85,6 +90,10 @@ class Usuario_DAO(DAO):
                     registro[4]
                 )
 
+                perfil = self._perfil_dao.get_by_id(
+                    registro[5]
+                )
+
                 usuarios.append(
 
                     Usuario(
@@ -92,7 +101,8 @@ class Usuario_DAO(DAO):
                         registro[1],
                         registro[2],
                         registro[3],
-                        cidade
+                        cidade,
+                        perfil
                     )
 
                 )
@@ -114,7 +124,8 @@ class Usuario_DAO(DAO):
                         NOME,
                         EMAIL,
                         DATA_NASCIMENTO,
-                        CIDADE_ID
+                        CIDADE_ID,
+                        PERFIL_ID
                     FROM
                         USUARIO
                     WHERE
@@ -132,12 +143,17 @@ class Usuario_DAO(DAO):
                 registro[4]
             )
 
+            perfil = self._perfil_dao.get_by_id(
+                registro[5]
+            )
+
             return Usuario(
                 registro[0],
                 registro[1],
                 registro[2],
                 registro[3],
-                cidade
+                cidade,
+                perfil
             )
 
         finally:
@@ -155,7 +171,8 @@ class Usuario_DAO(DAO):
                         NOME = %s,
                         EMAIL = %s,
                         DATA_NASCIMENTO = %s,
-                        CIDADE_ID = %s
+                        CIDADE_ID = %s,
+                        PERFIL_ID = %s
                     WHERE
                         ID = %s
                   """
@@ -167,6 +184,7 @@ class Usuario_DAO(DAO):
                     usuario.email,
                     usuario.data_nascimento,
                     usuario.cidade.id,
+                    usuario.perfil.id,
                     usuario.id
                 )
             )
